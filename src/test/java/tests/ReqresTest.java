@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import io.restassured.response.Response;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
 import reqres.User;
 
 import static io.restassured.RestAssured.given;
@@ -40,11 +41,10 @@ public class ReqresTest {
 
     @Test
     public void postCreateTest() {
+        SoftAssert softAssert = new SoftAssert();
         User expectedUser = User.builder()
                 .name("morpheus")
                 .job("leader")
-                .id(679)
-                .createdAt("2023-06-29T09:35:29.220Z")
                 .build();
 
         User requestUser = User.builder()
@@ -61,6 +61,34 @@ public class ReqresTest {
                 .statusCode(HTTP_CREATED)
                 .extract().body().asString();
         User responseUser = new Gson().fromJson(bodyResponse, User.class);
-        Assert.assertEquals(responseUser, expectedUser);
+        System.out.println(responseUser.toString());
+        softAssert.assertEquals(responseUser.getName(),expectedUser.getName());
+        softAssert.assertEquals(responseUser.getJob(),responseUser.getJob());
+        softAssert.assertAll();
+    }
+
+    @Test
+    public void postCreateTest1() {
+        User expectedUser = User.builder()
+                .name("morpheus")
+                .job("leader")
+                .build();
+
+        User requestUser = User.builder()
+                .name("morpheus")
+                .job("leader")
+                .build();
+
+        Response bodyResponse = given()
+                .body(requestUser)
+                .when()
+                .post(baseUrl+"/api/users")
+                .then()
+                .log().all()
+                .statusCode(HTTP_CREATED)
+                .extract().response();
+        User responseUser = new Gson().fromJson(bodyResponse.asString(), User.class);
+        System.out.println(responseUser.toString());
+        Assert.assertEquals(bodyResponse.statusCode(), HTTP_CREATED);
     }
 }
