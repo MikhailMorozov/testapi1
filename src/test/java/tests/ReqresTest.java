@@ -5,6 +5,7 @@ import io.restassured.response.Response;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
+import reqres.ResourceList;
 import reqres.User;
 
 import static io.restassured.RestAssured.given;
@@ -90,5 +91,19 @@ public class ReqresTest {
         User responseUser = new Gson().fromJson(bodyResponse.asString(), User.class);
         System.out.println(responseUser.toString());
         Assert.assertEquals(bodyResponse.statusCode(), HTTP_CREATED);
+    }
+
+    @Test
+    public void getResourceListTest() {
+        Response response = given()
+                .log().all()
+                .when()
+                .get(baseUrl+"/api/unknown")
+                .then()
+                .log().all()
+                .extract().response();
+        ResourceList resourceList = new Gson().fromJson(response.asString(), ResourceList.class);
+        System.out.println(resourceList.toString());
+        Assert.assertEquals(response.statusCode(),HTTP_OK);
     }
 }
