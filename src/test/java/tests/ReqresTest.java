@@ -5,9 +5,7 @@ import io.restassured.response.Response;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
-import reqres.Resource;
-import reqres.ResourceList;
-import reqres.User;
+import reqres.*;
 
 import static io.restassured.RestAssured.given;
 import static java.net.HttpURLConnection.HTTP_CREATED;
@@ -109,14 +107,34 @@ public class ReqresTest {
 
     @Test
     public void getResourceTest() {
+        Data expectedData = Data.builder()
+                .id(2)
+                .name("fuchsia rose")
+                .year(2001)
+                .color("#C74375")
+                .pantoneValue("17-2031")
+                .build();
+        Support expextedSupport = Support.builder()
+                .url("https://reqres.in/#support-heading")
+                .text("To keep ReqRes free, contributions towards server costs are appreciated!")
+                .build();
+        Resource expectedResource = Resource.builder()
+                .data(expectedData)
+                .support(expextedSupport)
+                .build();
+
+
         Response response = given()
                 .when()
                 .get(baseUrl+"/api/unknown/2")
                 .then()
                 .log().all()
+                .statusCode(HTTP_OK)
                 .extract().response();
         Resource resource = new Gson().fromJson(response.asString(), Resource.class);
+
         System.out.println(resource.toString());
-        Assert.assertEquals(response.statusCode(),HTTP_OK);
+//        Assert.assertEquals(response.statusCode(),HTTP_OK);
+        Assert.assertEquals(resource, expectedResource);
     }
 }
