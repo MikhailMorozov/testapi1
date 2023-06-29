@@ -69,10 +69,10 @@ public class ReqresTest {
 
     @Test
     public void postCreateTest1() {
-        User expectedUser = User.builder()
-                .name("morpheus")
-                .job("leader")
-                .build();
+//        User expectedUser = User.builder()
+//                .name("morpheus")
+//                .job("leader")
+//                .build();
 
         User requestUser = User.builder()
                 .name("morpheus")
@@ -136,5 +136,30 @@ public class ReqresTest {
         System.out.println(resource.toString());
 //        Assert.assertEquals(response.statusCode(),HTTP_OK);
         Assert.assertEquals(resource, expectedResource);
+    }
+
+    @Test
+    public void putUpdateTest() {
+//        User expectedUser = User.builder()
+//                .name("morpheus")
+//                .job("leader")
+//                .build();
+
+        User requestUser = User.builder()
+                .name("morpheus")
+                .job("zion resident")
+                .build();
+
+        Response bodyResponse = given()
+                .body(requestUser)
+                .when()
+                .put(baseUrl+"/api/users/2")
+                .then()
+                .log().all()
+                .statusCode(HTTP_OK)
+                .extract().response();
+        User responseUser = new Gson().fromJson(bodyResponse.asString(), User.class);
+        System.out.println(responseUser.toString());
+        Assert.assertEquals(bodyResponse.statusCode(), HTTP_OK);
     }
 }
